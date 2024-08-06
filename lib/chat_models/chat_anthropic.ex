@@ -367,6 +367,8 @@ defmodule LangChain.ChatModels.ChatAnthropic do
       headers: headers(get_api_key(anthropic), anthropic.api_version),
       receive_timeout: anthropic.receive_timeout
     )
+    |> Req.Request.prepend_request_steps(anthropic.req_request_steps)
+    |> Req.Request.prepend_response_steps(anthropic.req_response_steps)
     |> Req.post(
       into:
         Utils.handle_stream_fn(anthropic, &decode_stream/1, &do_process_response(anthropic, &1))
