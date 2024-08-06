@@ -112,6 +112,9 @@ defmodule LangChain.ChatModels.ChatAnthropic do
 
     # A list of maps for callback handlers
     field :callbacks, {:array, :map}, default: []
+
+    field :req_request_steps, {:array, :map}, default: []
+    field :req_response_steps, {:array, :map}, default: []
   end
 
   @type t :: %ChatAnthropic{}
@@ -127,7 +130,9 @@ defmodule LangChain.ChatModels.ChatAnthropic do
     :top_p,
     :top_k,
     :stream,
-    :callbacks
+    :callbacks,
+    :req_request_steps,
+    :req_response_steps
   ]
   @required_fields [:endpoint, :model]
 
@@ -311,6 +316,8 @@ defmodule LangChain.ChatModels.ChatAnthropic do
       )
 
     req
+    |> Req.Request.prepend_request_steps(anthropic.req_request_steps)
+    |> Req.Request.prepend_response_steps(anthropic.req_response_steps)
     |> Req.post()
     # parse the body and return it as parsed structs
     |> case do
